@@ -1,10 +1,10 @@
 <template>
   <FrontEnd>
-      <template v-slot:nav>
-        <Nav></Nav>
-      </template>
-      <template v-slot:main>
-        <div class="container">
+    <template v-slot:nav>
+      <Nav></Nav>
+    </template>
+    <template v-slot:main>
+      <div class="container">
         <div class="row">
           <div class="col-md-6 mx-auto">
             <h1 class="text-center">Sign In</h1>
@@ -35,45 +35,63 @@
                 />
               </div>
 
-            <div class="d-grid">
-                <button type="submit" class="d-block btn btn-primary">Sign In</button>
-            </div>
-            <div class="text-center">
-              <router-link to="/signUp">
-                <button class="btn ">Sign Up</button>
-              </router-link>
-            </div>
+              <div class="d-grid">
+                <button type="submit" class="d-block btn btn-primary">
+                  Sign In
+                </button>
+              </div>
+              <div class="text-center">
+                <router-link to="/signUp">
+                  <button class="btn">Sign Up</button>
+                </router-link>
+              </div>
             </form>
           </div>
         </div>
       </div>
-      </template>
+    </template>
   </FrontEnd>
 </template>
 
 <script>
-import Nav from '../../includes/Nav.vue'
-import FrontEnd from '../../layouts/frontEnd/FrontEnd.vue'
+import Nav from "../../includes/Nav.vue";
+import FrontEnd from "../../layouts/frontEnd/FrontEnd.vue";
+import axios from "axios";
 
 export default {
-    name:'SignIn',
-    components:{
-        Nav,FrontEnd
-    },
-    data(){
-        return {
-            email:"",
-            password:""
-        }
-    },
-    methods:{
-        signInHandler(){
-            
-        }
+  name: "SignIn",
+  components: {
+    Nav,
+    FrontEnd,
+  },
+  data() {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  beforeRouteEnter(to, from, next) {
+    const user = localStorage.getItem("user-info");
+    if (user) {
+      next(from.path);
+    } else {
+      next();
     }
-}
+  },
+  methods: {
+    async signInHandler() {
+      const response = await axios.get(
+        `http://localhost:3000/users?email=${this.email}&password=${this.password}`
+      );
+      console.log(response);
+      if (response.status === 200 && response.data.length > 0) {
+        localStorage.setItem("user-info", JSON.stringify(response.data[0]));
+        this.$router.push({ name: "Home" });
+      }
+    },
+  },
+};
 </script>
 
 <style>
-
 </style>
